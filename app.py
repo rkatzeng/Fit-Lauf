@@ -74,16 +74,8 @@ st.markdown(f"⏱️ Mit Zeit: {mit_zeit}")
 st.markdown(f"✅ Freigegeben: {freigegeben}")
 
 def seite_anmeldung():
-st.markdown('
-
-🏃 Kinderlauf Anmeldung
-', unsafe_allow_html=True)
-st.markdown('
-Bitte alle Felder ausfüllen
-', unsafe_allow_html=True)
-plaintext
-
-Copy
+st.markdown('🏃 Kinderlauf Anmeldung', unsafe_allow_html=True)
+st.markdown('Bitte alle Felder ausfüllen', unsafe_allow_html=True)
 with st.form("anmelde_formular", clear_on_submit=True):
     col1, col2 = st.columns(2)
     with col1:
