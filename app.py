@@ -24,23 +24,19 @@ st.session_state.admin_eingeloggt = False
 if "seite" not in st.session_state:
 st.session_state.seite = "anmeldung"
 
-st.markdown("""
-
-""", unsafe_allow_html=True)
-
 def sidebar():
 with st.sidebar:
-st.markdown("## 🏃 Kinderlauf")
+st.markdown("## Kinderlauf")
 st.markdown("---")
-st.markdown("### 📌 Navigation")
-if st.button("📝 Anmeldung", use_container_width=True):
+st.markdown("### Navigation")
+if st.button("Anmeldung", use_container_width=True):
 st.session_state.seite = "anmeldung"
 st.rerun()
-if st.button("🏆 Live-Ergebnisse", use_container_width=True):
+if st.button("Live-Ergebnisse", use_container_width=True):
 st.session_state.seite = "live"
 st.rerun()
 st.markdown("---")
-st.markdown("### 🔐 Admin-Bereich")
+st.markdown("### Admin-Bereich")
 if not st.session_state.admin_eingeloggt:
 passwort = st.text_input("Passwort", type="password", key="pw_input")
 if st.button("Einloggen", use_container_width=True):
@@ -71,49 +67,42 @@ st.session_state.seite = "anmeldung"
 st.rerun()
 st.markdown("---")
 gesamt, mit_zeit, freigegeben = get_statistik()
-st.markdown(f"Angemeldet: {gesamt}")
-st.markdown(f"Mit Zeit: {mit_zeit}")
-st.markdown(f"Freigegeben: {freigegeben}")
+st.write("Angemeldet:", gesamt)
+st.write("Mit Zeit:", mit_zeit)
+st.write("Freigegeben:", freigegeben)
 
 def seite_anmeldung():
-st.markdown('
+st.title("Kinderlauf Anmeldung")
+st.write("Bitte alle Felder ausfuellen")
 
-Kinderlauf Anmeldung
-', unsafe_allow_html=True)
-st.markdown('
-Bitte alle Felder ausfuellen
-', unsafe_allow_html=True)
 plaintext
 
 Copy
 with st.form("anmelde_formular", clear_on_submit=True):
     col1, col2 = st.columns(2)
     with col1:
-        vorname = st.text_input("Vorname *", placeholder="z.B. Anna")
-        nachname = st.text_input("Nachname *", placeholder="z.B. Mayer")
+        vorname = st.text_input("Vorname")
+        nachname = st.text_input("Nachname")
         geburtsjahr = st.selectbox(
-            "Geburtsjahr *",
+            "Geburtsjahr",
             options=list(range(2024, 2009, -1)),
             index=6
         )
     with col2:
         schulklasse = st.text_input(
-            "Schulklasse *",
-            placeholder="z.B. 2b",
-            help="Bitte Zahl + Buchstabe eingeben, z.B. 1a, 2b, 3c"
+            "Schulklasse",
+            placeholder="z.B. 2b"
         )
         geschlecht = st.radio(
-            "Geschlecht *",
+            "Geschlecht",
             options=["Maedchen", "Bursch"],
             horizontal=True
         )
-        schulort = st.text_input("Schulort *", placeholder="z.B. Linz")
+        schulort = st.text_input("Schulort")
 
     st.markdown("---")
     datenschutz = st.checkbox(
-        "Ich stimme der Verarbeitung der Daten meines Kindes zu. "
-        "Die Daten werden ausschliesslich fuer die Auswertung verwendet "
-        "und nach 6 Monaten geloescht. *",
+        "Ich stimme der Verarbeitung der Daten meines Kindes zu. Die Daten werden nach 6 Monaten geloescht.",
         value=False
     )
     abschicken = st.form_submit_button("Jetzt anmelden!", use_container_width=True)
@@ -132,10 +121,10 @@ if abschicken:
         fehler.append("Datenschutz-Zustimmung fehlt")
     klassenstufe = ''.join(filter(str.isdigit, schulklasse))
     if not klassenstufe:
-        fehler.append("Schulklasse muss eine Zahl enthalten (z.B. 2b)")
+        fehler.append("Schulklasse muss eine Zahl enthalten z.B. 2b")
     if fehler:
         for f in fehler:
-            st.error(f"Fehler: {f}")
+            st.error(f)
     else:
         startnummer, fehler_db = teilnehmer_anmelden(
             vorname.strip(), nachname.strip(), geburtsjahr,
@@ -144,15 +133,14 @@ if abschicken:
         )
         if startnummer:
             klassenstufe = ''.join(filter(str.isdigit, schulklasse))
-            kategorie = f"{geschlecht} {klassenstufe}. Klasse"
-            st.success(f"Anmeldung erfolgreich! Startnummer: {startnummer:03d}")
-            st.info(f"Kategorie: {kategorie} | Klasse: {schulklasse.upper()} | Ort: {schulort}")
+            kategorie = geschlecht + " " + klassenstufe + ". Klasse"
+            st.success("Anmeldung erfolgreich!")
+            st.metric("Startnummer", f"{startnummer:03d}")
+            st.info("Kategorie: " + kategorie + " | Klasse: " + schulklasse.upper() + " | Ort: " + schulort)
         else:
-            st.error(f"Fehler bei der Anmeldung: {fehler_db}")
+            st.error("Fehler bei der Anmeldung: " + str(fehler_db))
 def seite_live_ergebnisse():
-st.markdown("## Live-Ergebnisse")
-col1, col2, col3 = st.columns([1, 2, 1])
-with col2:
+st.title("Live-Ergebnisse")
 if st.button("Aktualisieren", use_container_width=True):
 st.rerun()
 df = get_ergebnisse(nur_freigegeben=True)
@@ -160,7 +148,7 @@ if df.empty:
 st.info("Noch keine Ergebnisse freigegeben. Bitte warten...")
 return
 kategorien = sorted(df['kategorie'].unique())
-tab_namen = ["Gesamt"] + [f"{k}" for k in kategorien]
+tab_namen = ["Gesamt"] + list(kategorien)
 tabs = st.tabs(tab_namen)
 with tabs[0]:
 st.markdown("### Gesamtranking")
@@ -169,7 +157,7 @@ gesamt_df.index += 1
 _zeige_rangliste(gesamt_df, zeige_kategorie=True)
 for i, kat in enumerate(kategorien):
 with tabs[i + 1]:
-st.markdown(f"### {kat}")
+st.markdown("### " + kat)
 kat_df = df[df['kategorie'] == kat].sort_values('zeit_sekunden').reset_index(drop=True)
 kat_df.index += 1
 _zeige_rangliste(kat_df, zeige_kategorie=False)
@@ -179,14 +167,14 @@ if df.empty:
 st.info("Noch keine Ergebnisse in dieser Kategorie.")
 return
 podest_cols = st.columns(3)
-medaillen = ["1.", "2.", "3."]
-for i, (col, medal) in enumerate(zip(podest_cols, medaillen)):
+plaetze = ["1. Platz", "2. Platz", "3. Platz"]
+for i, (col, platz) in enumerate(zip(podest_cols, plaetze)):
 if i < len(df):
 row = df.iloc[i]
 with col:
 st.metric(
-label=f"{medal} Platz",
-value=f"{row['vorname']} {row['nachname']}",
+label=platz,
+value=row['vorname'] + " " + row['nachname'],
 delta=row['zeit_anzeige']
 )
 st.markdown("---")
@@ -196,13 +184,13 @@ spalten.insert(4, 'kategorie')
 anzeige_df = df[spalten].copy()
 anzeige_df.insert(0, 'Platz', range(1, len(anzeige_df) + 1))
 if zeige_kategorie:
-anzeige_df.columns = ['Platz', 'Nr.', 'Vorname', 'Nachname', 'Klasse', 'Kategorie', 'Zeit']
+anzeige_df.columns = ['Platz', 'Nr', 'Vorname', 'Nachname', 'Klasse', 'Kategorie', 'Zeit']
 else:
-anzeige_df.columns = ['Platz', 'Nr.', 'Vorname', 'Nachname', 'Klasse', 'Zeit']
+anzeige_df.columns = ['Platz', 'Nr', 'Vorname', 'Nachname', 'Klasse', 'Zeit']
 st.dataframe(anzeige_df, use_container_width=True, hide_index=True)
 
 def seite_zeiterfassung():
-st.markdown("## Zeiterfassung")
+st.title("Zeiterfassung")
 col1, col2 = st.columns([1, 1])
 with col1:
 st.markdown("### Neue Zeit eingeben")
@@ -211,15 +199,15 @@ startnummer = st.number_input(
 "Startnummer", min_value=1, max_value=9999, step=1, value=1
 )
 zeit = st.text_input(
-"Zeit (MM:SS oder MM:SS.hh)",
+"Zeit",
 placeholder="z.B. 04:32 oder 04:32.15"
 )
 person = get_teilnehmer_by_startnummer(int(startnummer))
 if person:
 st.info(
-f"Person: {person['vorname']} {person['nachname']} | "
-f"Klasse {person['schulklasse'].upper()} | "
-f"{person['kategorie']}"
+"Person: " + person['vorname'] + " " + person['nachname'] +
+" | Klasse: " + person['schulklasse'].upper() +
+" | " + person['kategorie']
 )
 else:
 st.warning("Startnummer nicht gefunden")
@@ -239,15 +227,14 @@ if nicht_freigegeben.empty:
 st.success("Alle Zeiten sind freigegeben!")
 else:
 st.dataframe(
-nicht_freigegeben[['startnummer', 'vorname', 'nachname',
-'kategorie', 'zeit_anzeige']],
+nicht_freigegeben[['startnummer', 'vorname', 'nachname', 'kategorie', 'zeit_anzeige']],
 use_container_width=True, hide_index=True
 )
 else:
 st.info("Noch keine Zeiten erfasst.")
 
 def seite_freigabe():
-st.markdown("## Ergebnis-Freigabe")
+st.title("Ergebnis-Freigabe")
 df = get_ergebnisse(nur_freigegeben=False)
 if df.empty:
 st.info("Noch keine Zeiten erfasst.")
@@ -272,15 +259,15 @@ else:
 for , row in nicht_freigegeben.iterrows():
 col1, col2, col3, col4, col5 = st.columns([1, 2, 2, 2, 1])
 with col1:
-st.markdown(f"Nr. {row['startnummer']:03d}")
+st.write("Nr.", row['startnummer'])
 with col2:
-st.markdown(f"{row['vorname']} {row['nachname']}")
+st.write(row['vorname'] + " " + row['nachname'])
 with col3:
-st.markdown(f"{row['kategorie']}")
+st.write(row['kategorie'])
 with col4:
-st.markdown(f"{row['zeit_anzeige']}")
+st.write(row['zeit_anzeige'])
 with col5:
-if st.button("OK", key=f"frei{row['startnummer']}", help="Freigeben"):
+if st.button("OK", key="frei" + str(row['startnummer'])):
 zeit_freigeben(row['startnummer'])
 st.rerun()
 if not freigegeben.empty:
@@ -292,7 +279,7 @@ use_container_width=True, hide_index=True
 )
 
 def seite_teilnehmer():
-st.markdown("## Teilnehmerliste")
+st.title("Teilnehmerliste")
 df = get_alle_teilnehmer()
 if df.empty:
 st.info("Noch keine Teilnehmer angemeldet.")
@@ -312,7 +299,7 @@ if filter_klasse != "Alle":
 gefiltert = gefiltert[gefiltert['schulklasse'] == filter_klasse]
 if filter_ort != "Alle":
 gefiltert = gefiltert[gefiltert['schulort'] == filter_ort]
-st.markdown(f"{len(gefiltert)} Teilnehmer gefunden")
+st.write(len(gefiltert), "Teilnehmer gefunden")
 st.dataframe(gefiltert, use_container_width=True, hide_index=True)
 st.markdown("---")
 col1, col2 = st.columns(2)
@@ -336,7 +323,7 @@ use_container_width=True
 )
 
 def seite_statistik():
-st.markdown("## Statistik")
+st.title("Statistik")
 gesamt, mit_zeit, freigegeben = get_statistik()
 df = get_alle_teilnehmer()
 if df.empty:
