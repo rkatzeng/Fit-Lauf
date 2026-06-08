@@ -20,6 +20,7 @@ init_db()
 
 if "admin_eingeloggt" not in st.session_state:
 st.session_state.admin_eingeloggt = False
+
 if "seite" not in st.session_state:
 st.session_state.seite = "anmeldung"
 
