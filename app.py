@@ -1,4 +1,3 @@
-<<DOCUMENT:{"filename":"app.py","format":"txt"}>>
 import streamlit as st
 import pandas as pd
 from database import (
@@ -383,4 +382,3 @@ st.warning("Bitte zuerst einloggen.")
 
 if name == "main":
 main()
-<<>>
