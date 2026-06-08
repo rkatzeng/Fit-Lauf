@@ -1,3 +1,4 @@
+<<DOCUMENT:{"filename":"app.py","format":"txt"}>>
 import streamlit as st
 import pandas as pd
 from database import (
@@ -45,42 +46,42 @@ passwort = st.text_input("Passwort", type="password", key="pw_input")
 if st.button("Einloggen", use_container_width=True):
 if passwort == ADMIN_PASSWORT:
 st.session_state.admin_eingeloggt = True
-st.success("✅ Eingeloggt!")
+st.success("Eingeloggt!")
 st.rerun()
 else:
-st.error("❌ Falsches Passwort")
+st.error("Falsches Passwort")
 else:
-st.success("✅ Admin eingeloggt")
-if st.button("⏱️ Zeiterfassung", use_container_width=True):
+st.success("Admin eingeloggt")
+if st.button("Zeiterfassung", use_container_width=True):
 st.session_state.seite = "zeiterfassung"
 st.rerun()
-if st.button("✅ Freigabe", use_container_width=True):
+if st.button("Freigabe", use_container_width=True):
 st.session_state.seite = "freigabe"
 st.rerun()
-if st.button("👥 Teilnehmerliste", use_container_width=True):
+if st.button("Teilnehmerliste", use_container_width=True):
 st.session_state.seite = "teilnehmer"
 st.rerun()
-if st.button("📊 Statistik", use_container_width=True):
+if st.button("Statistik", use_container_width=True):
 st.session_state.seite = "statistik"
 st.rerun()
 st.markdown("---")
-if st.button("🚪 Ausloggen", use_container_width=True):
+if st.button("Ausloggen", use_container_width=True):
 st.session_state.admin_eingeloggt = False
 st.session_state.seite = "anmeldung"
 st.rerun()
 st.markdown("---")
 gesamt, mit_zeit, freigegeben = get_statistik()
-st.markdown(f"👥 Angemeldet: {gesamt}")
-st.markdown(f"⏱️ Mit Zeit: {mit_zeit}")
-st.markdown(f"✅ Freigegeben: {freigegeben}")
+st.markdown(f"Angemeldet: {gesamt}")
+st.markdown(f"Mit Zeit: {mit_zeit}")
+st.markdown(f"Freigegeben: {freigegeben}")
 
 def seite_anmeldung():
 st.markdown('
 
-🏃 Kinderlauf Anmeldung
+Kinderlauf Anmeldung
 ', unsafe_allow_html=True)
 st.markdown('
-Bitte alle Felder ausfüllen
+Bitte alle Felder ausfuellen
 ', unsafe_allow_html=True)
 plaintext
 
@@ -103,19 +104,19 @@ with st.form("anmelde_formular", clear_on_submit=True):
         )
         geschlecht = st.radio(
             "Geschlecht *",
-            options=["Mädchen", "Bursch"],
+            options=["Maedchen", "Bursch"],
             horizontal=True
         )
         schulort = st.text_input("Schulort *", placeholder="z.B. Linz")
 
     st.markdown("---")
     datenschutz = st.checkbox(
-        "✅ Ich stimme der Verarbeitung der Daten meines Kindes zu. "
-        "Die Daten werden ausschließlich für die Auswertung verwendet "
-        "und nach 6 Monaten gelöscht. *",
+        "Ich stimme der Verarbeitung der Daten meines Kindes zu. "
+        "Die Daten werden ausschliesslich fuer die Auswertung verwendet "
+        "und nach 6 Monaten geloescht. *",
         value=False
     )
-    abschicken = st.form_submit_button("🎽 Jetzt anmelden!", use_container_width=True)
+    abschicken = st.form_submit_button("Jetzt anmelden!", use_container_width=True)
 
 if abschicken:
     fehler = []
@@ -134,7 +135,7 @@ if abschicken:
         fehler.append("Schulklasse muss eine Zahl enthalten (z.B. 2b)")
     if fehler:
         for f in fehler:
-            st.error(f"❌ {f}")
+            st.error(f"Fehler: {f}")
     else:
         startnummer, fehler_db = teilnehmer_anmelden(
             vorname.strip(), nachname.strip(), geburtsjahr,
@@ -144,66 +145,64 @@ if abschicken:
         if startnummer:
             klassenstufe = ''.join(filter(str.isdigit, schulklasse))
             kategorie = f"{geschlecht} {klassenstufe}. Klasse"
-            st.markdown(f"""
-🎉 Anmeldung erfolgreich!
-
-{vorname} {nachname}
-
-Deine Startnummer:
-
-{startnummer:03d}
-📌 Kategorie: {kategorie}
-
-🏫 Klasse: {schulklasse.upper()} | 📍 {schulort}
-
-""", unsafe_allow_html=True) else: st.error(f"❌ Fehler bei der Anmeldung: {fehler_db}")
+            st.success(f"Anmeldung erfolgreich! Startnummer: {startnummer:03d}")
+            st.info(f"Kategorie: {kategorie} | Klasse: {schulklasse.upper()} | Ort: {schulort}")
+        else:
+            st.error(f"Fehler bei der Anmeldung: {fehler_db}")
 def seite_live_ergebnisse():
-st.markdown('
-
-🏆 Live-Ergebnisse
-', unsafe_allow_html=True)
+st.markdown("## Live-Ergebnisse")
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-if st.button("🔄 Aktualisieren", use_container_width=True):
+if st.button("Aktualisieren", use_container_width=True):
 st.rerun()
 df = get_ergebnisse(nur_freigegeben=True)
 if df.empty:
-st.info("⏳ Noch keine Ergebnisse freigegeben. Bitte warten...")
+st.info("Noch keine Ergebnisse freigegeben. Bitte warten...")
 return
 kategorien = sorted(df['kategorie'].unique())
-tab_namen = ["🏅 Gesamt"] + [f"🏃 {k}" for k in kategorien]
+tab_namen = ["Gesamt"] + [f"{k}" for k in kategorien]
 tabs = st.tabs(tab_namen)
 with tabs[0]:
-st.markdown("### 🏅 Gesamtranking")
+st.markdown("### Gesamtranking")
 gesamt_df = df.sort_values('zeit_sekunden').reset_index(drop=True)
 gesamt_df.index += 1
 _zeige_rangliste(gesamt_df, zeige_kategorie=True)
 for i, kat in enumerate(kategorien):
 with tabs[i + 1]:
-st.markdown(f"### 🏃 {kat}")
+st.markdown(f"### {kat}")
 kat_df = df[df['kategorie'] == kat].sort_values('zeit_sekunden').reset_index(drop=True)
 kat_df.index += 1
 _zeige_rangliste(kat_df, zeige_kategorie=False)
+
 def _zeige_rangliste(df, zeige_kategorie=False):
 if df.empty:
 st.info("Noch keine Ergebnisse in dieser Kategorie.")
 return
 podest_cols = st.columns(3)
-medaillen = ["🥇", "🥈", "🥉"]
+medaillen = ["1.", "2.", "3."]
 for i, (col, medal) in enumerate(zip(podest_cols, medaillen)):
 if i < len(df):
 row = df.iloc[i]
 with col:
-farbe = "#FFD700" if i == 0 else "#C0C0C0" if i == 1 else "#CD7F32"
-st.markdown(f"""
+st.metric(
+label=f"{medal} Platz",
+value=f"{row['vorname']} {row['nachname']}",
+delta=row['zeit_anzeige']
+)
+st.markdown("---")
+spalten = ['startnummer', 'vorname', 'nachname', 'schulklasse', 'zeit_anzeige']
+if zeige_kategorie:
+spalten.insert(4, 'kategorie')
+anzeige_df = df[spalten].copy()
+anzeige_df.insert(0, 'Platz', range(1, len(anzeige_df) + 1))
+if zeige_kategorie:
+anzeige_df.columns = ['Platz', 'Nr.', 'Vorname', 'Nachname', 'Klasse', 'Kategorie', 'Zeit']
+else:
+anzeige_df.columns = ['Platz', 'Nr.', 'Vorname', 'Nachname', 'Klasse', 'Zeit']
+st.dataframe(anzeige_df, use_container_width=True, hide_index=True)
 
-{medal}
-{row['vorname']} {row['nachname']}
-{row['zeit_anzeige']}
-Nr. {row['startnummer']:03d}
-""", unsafe_allow_html=True) st.markdown("---") spalten = ['startnummer', 'vorname', 'nachname', 'schulklasse', 'zeit_anzeige'] if zeige_kategorie: spalten.insert(4, 'kategorie') anzeige_df = df[spalten].copy() anzeige_df.insert(0, 'Platz', range(1, len(anzeige_df) + 1)) if zeige_kategorie: anzeige_df.columns = ['Platz', 'Nr.', 'Vorname', 'Nachname', 'Klasse', 'Kategorie', 'Zeit'] else: anzeige_df.columns = ['Platz', 'Nr.', 'Vorname', 'Nachname', 'Klasse', 'Zeit'] st.dataframe(anzeige_df, use_container_width=True, hide_index=True)
 def seite_zeiterfassung():
-st.markdown("## ⏱️ Zeiterfassung")
+st.markdown("## Zeiterfassung")
 col1, col2 = st.columns([1, 1])
 with col1:
 st.markdown("### Neue Zeit eingeben")
@@ -218,21 +217,21 @@ placeholder="z.B. 04:32 oder 04:32.15"
 person = get_teilnehmer_by_startnummer(int(startnummer))
 if person:
 st.info(
-f"👤 {person['vorname']} {person['nachname']} | "
+f"Person: {person['vorname']} {person['nachname']} | "
 f"Klasse {person['schulklasse'].upper()} | "
 f"{person['kategorie']}"
 )
 else:
-st.warning("⚠️ Startnummer nicht gefunden")
-speichern = st.form_submit_button("💾 Zeit speichern", use_container_width=True)
+st.warning("Startnummer nicht gefunden")
+speichern = st.form_submit_button("Zeit speichern", use_container_width=True)
 if speichern and zeit:
 ok, msg = zeit_erfassen(int(startnummer), zeit.strip())
 if ok:
-st.success(f"✅ {msg}")
+st.success(msg)
 else:
-st.error(f"❌ {msg}")
+st.error(msg)
 with col2:
-st.markdown("### ⏳ Noch nicht freigegebene Zeiten")
+st.markdown("### Noch nicht freigegebene Zeiten")
 df = get_ergebnisse(nur_freigegeben=False)
 if not df.empty:
 nicht_freigegeben = df[df['freigegeben'] == False]
@@ -248,7 +247,7 @@ else:
 st.info("Noch keine Zeiten erfasst.")
 
 def seite_freigabe():
-st.markdown("## ✅ Ergebnis-Freigabe")
+st.markdown("## Ergebnis-Freigabe")
 df = get_ergebnisse(nur_freigegeben=False)
 if df.empty:
 st.info("Noch keine Zeiten erfasst.")
@@ -257,50 +256,50 @@ nicht_freigegeben = df[df['freigegeben'] == False]
 freigegeben = df[df['freigegeben'] == True]
 col1, col2 = st.columns(2)
 with col1:
-st.metric("⏳ Warten auf Freigabe", len(nicht_freigegeben))
+st.metric("Warten auf Freigabe", len(nicht_freigegeben))
 with col2:
-st.metric("✅ Freigegeben", len(freigegeben))
+st.metric("Freigegeben", len(freigegeben))
 if not nicht_freigegeben.empty:
-if st.button("🚀 ALLE freigeben", type="primary", use_container_width=True):
+if st.button("ALLE freigeben", type="primary", use_container_width=True):
 alle_freigeben()
-st.success("✅ Alle Ergebnisse wurden freigegeben!")
+st.success("Alle Ergebnisse wurden freigegeben!")
 st.rerun()
 st.markdown("---")
-st.markdown("### ⏳ Warten auf Freigabe")
+st.markdown("### Warten auf Freigabe")
 if nicht_freigegeben.empty:
 st.success("Alle Zeiten sind bereits freigegeben!")
 else:
 for , row in nicht_freigegeben.iterrows():
 col1, col2, col3, col4, col5 = st.columns([1, 2, 2, 2, 1])
 with col1:
-st.markdown(f"#{row['startnummer']:03d}")
+st.markdown(f"Nr. {row['startnummer']:03d}")
 with col2:
 st.markdown(f"{row['vorname']} {row['nachname']}")
 with col3:
-st.markdown(f"📌 {row['kategorie']}")
+st.markdown(f"{row['kategorie']}")
 with col4:
-st.markdown(f"⏱️ {row['zeit_anzeige']}")
+st.markdown(f"{row['zeit_anzeige']}")
 with col5:
-if st.button("✅", key=f"frei{row['startnummer']}", help="Freigeben"):
+if st.button("OK", key=f"frei{row['startnummer']}", help="Freigeben"):
 zeit_freigeben(row['startnummer'])
 st.rerun()
 if not freigegeben.empty:
 st.markdown("---")
-st.markdown("### ✅ Bereits freigegeben")
+st.markdown("### Bereits freigegeben")
 st.dataframe(
 freigegeben[['startnummer', 'vorname', 'nachname', 'kategorie', 'zeit_anzeige']],
 use_container_width=True, hide_index=True
 )
 
 def seite_teilnehmer():
-st.markdown("## 👥 Teilnehmerliste")
+st.markdown("## Teilnehmerliste")
 df = get_alle_teilnehmer()
 if df.empty:
 st.info("Noch keine Teilnehmer angemeldet.")
 return
 col1, col2, col3 = st.columns(3)
 with col1:
-filter_geschlecht = st.selectbox("Geschlecht", ["Alle", "Mädchen", "Bursch"])
+filter_geschlecht = st.selectbox("Geschlecht", ["Alle", "Maedchen", "Bursch"])
 with col2:
 klassen = ["Alle"] + sorted(df['schulklasse'].unique().tolist())
 filter_klasse = st.selectbox("Klasse", klassen)
@@ -320,7 +319,7 @@ col1, col2 = st.columns(2)
 with col1:
 csv = export_ergebnisse_csv()
 st.download_button(
-"📥 Ergebnisse als CSV exportieren",
+"Ergebnisse als CSV exportieren",
 data=csv,
 file_name="kinderlauf_ergebnisse.csv",
 mime="text/csv",
@@ -329,7 +328,7 @@ use_container_width=True
 with col2:
 teilnehmer_csv = df.to_csv(index=False).encode('utf-8')
 st.download_button(
-"📥 Teilnehmerliste als CSV exportieren",
+"Teilnehmerliste als CSV exportieren",
 data=teilnehmer_csv,
 file_name="kinderlauf_teilnehmer.csv",
 mime="text/csv",
@@ -337,7 +336,7 @@ use_container_width=True
 )
 
 def seite_statistik():
-st.markdown("## 📊 Statistik")
+st.markdown("## Statistik")
 gesamt, mit_zeit, freigegeben = get_statistik()
 df = get_alle_teilnehmer()
 if df.empty:
@@ -345,13 +344,13 @@ st.info("Noch keine Daten vorhanden.")
 return
 col1, col2, col3, col4 = st.columns(4)
 with col1:
-st.metric("👥 Angemeldet", gesamt)
+st.metric("Angemeldet", gesamt)
 with col2:
-st.metric("⏱️ Mit Zeit", mit_zeit)
+st.metric("Mit Zeit", mit_zeit)
 with col3:
-st.metric("✅ Freigegeben", freigegeben)
+st.metric("Freigegeben", freigegeben)
 with col4:
-st.metric("⏳ Ausstehend", gesamt - mit_zeit)
+st.metric("Ausstehend", gesamt - mit_zeit)
 st.markdown("---")
 col1, col2 = st.columns(2)
 with col1:
@@ -378,22 +377,22 @@ elif seite == "zeiterfassung":
 if st.session_state.admin_eingeloggt:
 seite_zeiterfassung()
 else:
-st.warning("🔐 Bitte zuerst einloggen.")
+st.warning("Bitte zuerst einloggen.")
 elif seite == "freigabe":
 if st.session_state.admin_eingeloggt:
 seite_freigabe()
 else:
-st.warning("🔐 Bitte zuerst einloggen.")
+st.warning("Bitte zuerst einloggen.")
 elif seite == "teilnehmer":
 if st.session_state.admin_eingeloggt:
 seite_teilnehmer()
 else:
-st.warning("🔐 Bitte zuerst einloggen.")
+st.warning("Bitte zuerst einloggen.")
 elif seite == "statistik":
 if st.session_state.admin_eingeloggt:
 seite_statistik()
 else:
-st.warning("🔐 Bitte zuerst einloggen.")
+st.warning("Bitte zuerst einloggen.")
 
 if name == "main":
 main()
