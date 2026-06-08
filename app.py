@@ -150,17 +150,12 @@ Deine Startnummer:
 
 """, unsafe_allow_html=True) else: st.error(f"❌ Fehler bei der Anmeldung: {fehler_db}")
 def seite_live_ergebnisse():
-st.markdown('
-
-🏆 Live-Ergebnisse
-', unsafe_allow_html=True)
+st.markdown('🏆 Live-Ergebnisse', unsafe_allow_html=True)
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
 if st.button("🔄 Aktualisieren", use_container_width=True):
 st.rerun()
-plaintext
 
-Copy
 df = get_ergebnisse(nur_freigegeben=True)
 if df.empty:
     st.info("⏳ Noch keine Ergebnisse freigegeben. Bitte warten...")
@@ -187,9 +182,6 @@ if df.empty:
 st.info("Noch keine Ergebnisse in dieser Kategorie.")
 return
 
-plaintext
-
-Copy
 podest_cols = st.columns(3)
 medaillen = ["🥇", "🥈", "🥉"]
 for i, (col, medal) in enumerate(zip(podest_cols, medaillen)):
@@ -203,9 +195,7 @@ for i, (col, medal) in enumerate(zip(podest_cols, medaillen)):
 {row['zeit_anzeige']}
 Nr. {row['startnummer']:03d}
 """, unsafe_allow_html=True)
-plaintext
 
-Copy
 st.markdown("---")
 spalten = ['startnummer', 'vorname', 'nachname', 'schulklasse', 'zeit_anzeige']
 if zeige_kategorie:
@@ -221,9 +211,6 @@ def seite_zeiterfassung():
 st.markdown("## ⏱️ Zeiterfassung")
 col1, col2 = st.columns([1, 1])
 
-plaintext
-
-Copy
 with col1:
     st.markdown("### Neue Zeit eingeben")
     with st.form("zeit_formular", clear_on_submit=True):
@@ -272,9 +259,6 @@ def seite_freigabe():
 st.markdown("## ✅ Ergebnis-Freigabe")
 df = get_ergebnisse(nur_freigegeben=False)
 
-plaintext
-
-Copy
 if df.empty:
     st.info("Noch keine Zeiten erfasst.")
     return
@@ -327,9 +311,6 @@ def seite_teilnehmer():
 st.markdown("## 👥 Teilnehmerliste")
 df = get_alle_teilnehmer()
 
-plaintext
-
-Copy
 if df.empty:
     st.info("Noch keine Teilnehmer angemeldet.")
     return
@@ -379,9 +360,6 @@ st.markdown("## 📊 Statistik")
 gesamt, mit_zeit, freigegeben = get_statistik()
 df = get_alle_teilnehmer()
 
-plaintext
-
-Copy
 if df.empty:
     st.info("Noch keine Daten vorhanden.")
     return
@@ -414,9 +392,6 @@ def main():
 sidebar()
 seite = st.session_state.seite
 
-plaintext
-
-Copy
 if seite == "anmeldung":
     seite_anmeldung()
 elif seite == "live":
